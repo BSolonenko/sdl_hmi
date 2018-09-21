@@ -357,6 +357,7 @@ FFW.RC = FFW.RPCObserver.create(
             var seatControlData = null;
 
             result = FFW.RPCHelper.getNextInteriorVehicleData();
+            result = SDL.SDLModel.data.resultCode[result];
             if(FFW.RPCHelper.isSuccessResultCode(result)) {
               switch(moduleType){
                 case 'CLIMATE':{
