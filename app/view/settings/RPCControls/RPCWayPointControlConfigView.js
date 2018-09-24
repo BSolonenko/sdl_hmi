@@ -32,8 +32,104 @@ SDL.RPCWayPointControlConfigView = Em.ContainerView.create({
     ],
     
     childViews: [
-      SDL.RPCViewHelper.getBackButton(),
-      SDL.RPCViewHelper.getQueueControls('SubscribeWayPoints'),
-      SDL.RPCViewHelper.getSingleSelect('SubscribeWayPoints')
-    ]
+      'backButton',
+      'newButton',
+      'removeButton',
+      'previousButton',
+      'nextButton',
+      'counterLabel',
+      'subscribeWayPointsSelect'
+    ],
+    backButton: SDL.Button.extend(
+        {
+          classNames: [
+            'backControl'
+          ],
+          action: 'onState',
+          target: 'SDL.SettingsController',
+          goToState: 'rpccontrol',
+          icon: 'images/media/ico_back.png',
+          style: 'top: 100px',
+          onDown: false
+        }
+      ),
+    newButton: SDL.Button.extend(
+        {
+          classNames: [
+            'newButton'
+          ],
+          action: 'newWayPointResponse',
+          target: 'FFW.RPCHelper',
+          text: 'New',
+          onDown: false
+        }
+    ),
+    removeButton: SDL.Button.extend(
+      {
+        classNames: [
+          'removeButton'
+        ],
+        isDisabled: function() {
+          return FFW.RPCHelper.wayPointResultCodes.length == 1;
+        }.property(
+          'FFW.RPCHelper.SubscribeWayPointsRequestNumber'
+          
+        ),
+        disabledBinding: 'isDisabled',
+        action: 'removeWayPointResponse',
+        target: 'FFW.RPCHelper',
+        text: 'Remove',
+        onDown: false
+      }
+    ),
+    previousButton: SDL.Button.extend(
+        {
+          classNames: [
+            'previousButton'
+          ],
+          isDisabled: function() {
+            return FFW.RPCHelper.SubscribeWayPointsRequestNumber == 1;
+          }.property(
+            'FFW.RPCHelper.SubscribeWayPointsRequestNumber'
+          ),
+          disabledBinding: 'isDisabled',
+          action: 'previousWayPointResultCode',
+          target: 'FFW.RPCHelper',
+          text: 'Previous',
+          onDown: false
+        }
+      ),
+    nextButton: SDL.Button.extend(
+      {
+        classNames: [
+          'nextButton'
+        ],
+        isDisabled: function() {
+          return FFW.RPCHelper.SubscribeWayPointsRequestNumber == 
+                                      FFW.RPCHelper.wayPointResultCodes.length;
+        }.property(
+          'FFW.RPCHelper.SubscribeWayPointsRequestNumber'
+        ),
+        disabledBinding: 'isDisabled',
+        action: 'nextWayPointResultCode',
+        target: 'FFW.RPCHelper',
+        text: 'Next',
+        onDown: false
+      }
+    ),
+    counterLabel: SDL.Label.extend(
+        {
+          elementId: 'counterLabel',
+          classNames: 'counterLabel',
+          contentBinding: 'FFW.RPCHelper.getWayPointResponseStatus'
+        }
+    ),
+    subscribeWayPointsSelect: Em.Select.extend(
+        {
+          elementId: 'subscribeWayPointsSelect',
+          classNames: 'subscribeWayPointsSelect',
+          contentBinding: 'SDL.SDLModel.data.resultCodes',
+          valueBinding: 'FFW.RPCHelper.SubscribeWayPoints'
+        }
+    ),  
 });

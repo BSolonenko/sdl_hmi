@@ -57,15 +57,6 @@ SDL.RPCControlView = Em.ContainerView.create(
               text: 'Vehicle Data',
               classNames: 'list-item button'
             }));
-
-          this.get('AppsList.list.childViews').pushObject(SDL.Button.create(
-            {
-              action: 'onState',
-              target: 'SDL.SettingsController',
-              goToState:'rpccontrol.rpcinteriorvehicledataconfig',
-              text: 'Interior Vehicle Data',
-              classNames: 'list-item button'
-            }));  
             
           for (i = 0; i < apps.length; i++) {
             appIndex = SDL.SDLModel.data.registeredApps.indexOf(apps[i]);

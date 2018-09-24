@@ -129,7 +129,7 @@ SDL.NavigationController = Em.Object.create(
      */
     subscribeWayPoints: function(request) {
       result = FFW.RPCHelper.getCustomResultCode(null, 'SubscribeWayPoints');
-      result = SDL.SDLModel.data.resultCode[result];
+      
       if(FFW.RPCHelper.isSuccessResultCode(result)){
         if (!this.model.isSubscribedOnWayPoints) {
           this.model.set('isSubscribedOnWayPoints', true);
