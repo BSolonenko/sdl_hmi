@@ -167,10 +167,12 @@ FFW.UI = FFW.RPCObserver.create(
                   SDL.AlertPopUp.deactivate('timeout');
                 }, request.method);
                   if(request.params.duration) {
-                    SDL.ResetTimeoutPopUp.set('timeoutSeconds',
-                    {'UI.Alert': request.params.duration/1000,
-                    'TTS.Speak': request.params.duration/1000});
+                    SDL.ResetTimeoutPopUp.timeoutSeconds['UI.Alert'] = request.params.duration/1000;
                   }
+                  if(SDL.ResetTimeoutPopUp.active) {
+                    SDL.ResetTimeoutPopUp.DeactivatePopUp();
+                  }
+                  SDL.ResetTimeoutPopUp.ActivatePopUp();
                   
                 }
               SDL.SDLController.onSystemContextChange(request.params.appID, request.id);
@@ -366,7 +368,7 @@ FFW.UI = FFW.RPCObserver.create(
                 {'UI.ScrollableMessage': request.params.timeout/1000});
               SDL.ResetTimeoutPopUp.set('timeoutString', request.params.timeout/1000);
               SDL.ResetTimeoutPopUp.expandCallbacks(function(){
-                SDL.ScrollableMessage.deactivate(true);
+                SDL.ScrollableMessage.deactivate(false);
               }, request.method);
 
               SDL.ResetTimeoutPopUp.extendResetTimeoutCallBack(SDL.ScrollableMessage.setTimer, request.method);

@@ -131,7 +131,7 @@ SDL.AlertPopUp = Em.ContainerView.create(
         );
       }else {
         SDL.SDLController.alertResponse(
-          SDL.SDLModel.data.resultCode['ABORTED'], this.alertRequestId
+          SDL.SDLModel.data.resultCode['SUCCESS'], this.alertRequestId
         );
       }
       SDL.SDLController.onSystemContextChange();

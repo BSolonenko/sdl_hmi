@@ -152,7 +152,8 @@ FFW.TTS = FFW.RPCObserver.create(
               return;
             }
           }
-          if (SDL.ResetTimeoutPopUp.active) {
+          if (SDL.ResetTimeoutPopUp.active && 
+              !SDL.ResetTimeoutPopUp.resetTimeoutRPCs.includes('UI.Alert')) {
             FFW.TTS.sendError(
               SDL.SDLModel.data.resultCode.REJECTED, request.id, 'TTS.Speak',
               'TTS in progress. Rejected.'
@@ -164,7 +165,9 @@ FFW.TTS = FFW.RPCObserver.create(
               SDL.SDLController.TTSResponseHandler();
             }, request.method);
             SDL.ResetTimeoutPopUp.extendResetTimeoutCallBack(SDL.AlertPopUp.setTimerTTS, request.method);
-            SDL.ResetTimeoutPopUp.ActivatePopUp();
+            SDL.ResetTimeoutPopUp.timeoutSeconds['TTS.Speak'] = 
+                SDL.ResetTimeoutPopUp.timeoutSeconds['UI.Alert'];
+            SDL.ResetTimeoutPopUp.addCheckBox(SDL.ResetTimeoutPopUp.resetTimeoutRPCs.length);
             
             SDL.SDLModel.onPrompt(request.params.ttsChunks);
             if (request.params.playTone) {

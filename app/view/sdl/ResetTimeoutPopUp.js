@@ -170,6 +170,20 @@ SDL.ResetTimeoutPopUp = Em.ContainerView.create({
         });
     },
 
+    /**
+     * @function setTimeoutString
+     * @description Update value of timeout on HMI screen every second
+     */
+    setTimeoutString: function() {
+        var message = '';
+        var self = this;
+        self.resetTimeoutRPCs.forEach(function (method) {
+            self.timeoutSeconds[method] = self.timeoutSeconds[method] - 1;
+            message = message + method + ": " + self.timeoutSeconds[method].toString() + '\n';
+         });
+        self.set('timeoutString',message);
+    },
+
     /*
      * ActivatePopUp function. activates pop-up
      */
@@ -186,14 +200,10 @@ SDL.ResetTimeoutPopUp = Em.ContainerView.create({
         }
 
         const self = this;
-        this.timer = setInterval(
+        self.setTimeoutString();
+        self.timer = setInterval(
             function() {
-                    var message = '';
-                    self.resetTimeoutRPCs.forEach(function (method) {
-                        self.timeoutSeconds[method] = self.timeoutSeconds[method] - 1;
-                        message = message + method + ": " + self.timeoutSeconds[method].toString() + '\n';
-                     });
-                    self.set('timeoutString',message);
+                    self.setTimeoutString();
             }, 1000
         ); 
     },
@@ -292,6 +302,10 @@ SDL.ResetTimeoutPopUp = Em.ContainerView.create({
                 if(0 == self.timeoutSeconds[method]) {
                     timeoutExpired.push(method);
                 }
+                if(method == 'TTS.Speak' && 
+                    0 == self.timeoutSeconds[method]-1) {
+                        timeoutExpired.push(method);
+                }
             });
             timeoutExpired.forEach(function(method){
                 self.resetTimeoutRPCs.removeObject(method);
@@ -308,7 +322,7 @@ SDL.ResetTimeoutPopUp = Em.ContainerView.create({
 
         method = this.resetTimeoutRPCs[0];
 
-        if(1 == this.timeoutSeconds[method]) {
+        if(0 >= this.timeoutSeconds[method]) {
             this.callbacks[method]();
             this.DeactivatePopUp();
         }
