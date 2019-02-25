@@ -328,4 +328,17 @@ SDL.ResetTimeoutPopUp = Em.ContainerView.create({
         }
 
     }.observes('this.timeoutString'),
+
+    /*
+     * handleResize function. responsible for the location of the popup after resize parent window
+     */
+    handleResize (event) {
+        var newPos = event.currentTarget.innerWidth - 302;
+        document.getElementById('ResetTimeoutPopUp').style.left= newPos + "px";
+    }
 });
+
+/**
+ * @description binding resize to the call to the handleResize method in setTimeoutPopUp
+ */
+$(window).on('resize', SDL.ResetTimeoutPopUp.handleResize);
