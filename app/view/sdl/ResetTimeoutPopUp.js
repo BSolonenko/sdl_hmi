@@ -208,6 +208,15 @@ SDL.ResetTimeoutPopUp = Em.ContainerView.create({
         ); 
     },
 
+    ActivateTimeoutWithoutPopUp: function() {
+        self = this;
+        self.timer = setInterval(
+            function() {
+                    self.setTimeoutString();
+            }, 1000
+        );
+    },
+
     /*
      * DeactivatePopUp function. deactivates pop-up
      */     
@@ -321,6 +330,10 @@ SDL.ResetTimeoutPopUp = Em.ContainerView.create({
         }
 
         method = this.resetTimeoutRPCs[0];
+
+        if(method === undefined) {
+            this.DeactivatePopUp();
+        }
 
         if(0 >= this.timeoutSeconds[method]) {
             this.callbacks[method]();

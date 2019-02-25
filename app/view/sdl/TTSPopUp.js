@@ -135,6 +135,9 @@ SDL.TTSPopUp = Em.ContainerView.create(
     }.observes('this.timeoutSeconds'),
     DeactivateTTS: function() {
       clearInterval(this.timer);
+      if(SDL.ResetTimeoutPopUp.resetTimeoutRPCs.includes('TTS.Speak')) {
+        SDL.ResetTimeoutPopUp.resetTimeoutRPCs.removeObject('TTS.Speak');
+      }
       this.timer = null;
       this.player.stopPlaying();
       this.player.clearFiles();

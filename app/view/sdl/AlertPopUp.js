@@ -114,6 +114,10 @@ SDL.AlertPopUp = Em.ContainerView.create(
      * Deactivate PopUp
      */
     deactivate: function(reason) {
+      SDL.TTSPopUp.DeactivateTTS();
+      if(SDL.ResetTimeoutPopUp.resetTimeoutRPCs.includes('UI.Alert')) {
+        SDL.ResetTimeoutPopUp.resetTimeoutRPCs.removeObject('UI.Alert');
+      }
       this.set('active', false);
       clearTimeout(this.timer);
       this.set('content1', '');

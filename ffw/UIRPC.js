@@ -160,7 +160,6 @@ FFW.UI = FFW.RPCObserver.create(
             // not processed."); this.errorResponsePull[request.id] = null;
             // return; } }
             if (SDL.SDLModel.onUIAlert(request.params, request.id)) {
-              if(!request.params.softButtons){
                 SDL.ResetTimeoutPopUp.extendResetTimeoutRPCs([request.method]);
                 SDL.ResetTimeoutPopUp.extendResetTimeoutCallBack(SDL.AlertPopUp.setTimerUI , request.method);
                 SDL.ResetTimeoutPopUp.expandCallbacks(function(){
@@ -172,9 +171,11 @@ FFW.UI = FFW.RPCObserver.create(
                   if(SDL.ResetTimeoutPopUp.active) {
                     SDL.ResetTimeoutPopUp.DeactivatePopUp();
                   }
-                  SDL.ResetTimeoutPopUp.ActivatePopUp();
-                  
-                }
+                  if(request.params.softButtons === undefined) {
+                    SDL.ResetTimeoutPopUp.ActivatePopUp();
+                  } else {
+                    SDL.ResetTimeoutPopUp.ActivateTimeoutWithoutPopUp();
+                  }
               SDL.SDLController.onSystemContextChange(request.params.appID, request.id);
             }
             break;
