@@ -59,11 +59,7 @@ FFW.Navigation = FFW.RPCObserver.create(
     /**
      * access to basic RPC functionality
      */
-    client: FFW.RPCClient.create(
-      {
-        componentName: 'Navigation'
-      }
-    ),
+    client: FFW.RPCClient,
     onAudioDataStreamingSubscribeRequestID: -1,
     onVideoDataStreamingSubscribeRequestID: -1,
     onAudioDataStreamingUnsubscribeRequestID: -1,
@@ -76,8 +72,15 @@ FFW.Navigation = FFW.RPCObserver.create(
      * connect to RPC bus
      */
     connect: function() {
-      this.client.connect(this, 800); // Magic number is unique identifier for
+      this.client.connect("Navigation", this); // Magic number is unique identifier for
       // component
+    },
+    sendMesage: function(JSONMessage){
+      this.client.send(JSONMessage, "Navigation");
+    },
+    componentName: "Navigation",
+    subscribeToNotification: function(notification){
+      this.client.subscribeToNotification(notification, this.componentName);
     },
     /**
      * disconnect from RPC bus
@@ -94,9 +97,9 @@ FFW.Navigation = FFW.RPCObserver.create(
       Em.Logger.log('FFW.Navigation.onRPCRegistered');
       this._super();
       // subscribe to notifications
-      this.onAudioDataStreamingSubscribeRequestID = this.client
+      this.onAudioDataStreamingSubscribeRequestID = this
         .subscribeToNotification(this.onAudioDataStreamingNotification);
-      this.onVideoDataStreamingSubscribeRequestID = this.client
+      this.onVideoDataStreamingSubscribeRequestID = this
         .subscribeToNotification(this.onVideoDataStreamingNotification);
     },
     /**
@@ -229,7 +232,7 @@ FFW.Navigation = FFW.RPCObserver.create(
                 'method': 'Navigation.IsReady'
               }
             };
-            this.client.send(JSONMessage);
+            this.sendMesage(JSONMessage);
             break;
           }
           case 'Navigation.GetWayPoints':
@@ -427,7 +430,7 @@ FFW.Navigation = FFW.RPCObserver.create(
                   'rejectedParams': rejectedParams
                 }
               };
-              this.client.send(JSONMessage);
+              this.sendMesage(JSONMessage);
             } else {
               this.sendNavigationResult(
                 SDL.SDLModel.data.resultCode.SUCCESS,
@@ -534,7 +537,7 @@ FFW.Navigation = FFW.RPCObserver.create(
             }
           }
         };
-        this.client.send(JSONMessage);
+        this.sendMesage(JSONMessage);
       }
     },
     /**
@@ -568,7 +571,7 @@ FFW.Navigation = FFW.RPCObserver.create(
             'method': method
           }
         };
-        this.client.send(JSONMessage);
+        this.sendMesage(JSONMessage);
       }
     },
     /**
@@ -592,7 +595,7 @@ FFW.Navigation = FFW.RPCObserver.create(
             'method': 'Navigation.GetWayPoints'
           }
         };
-        this.client.send(JSONMessage);
+        this.sendMesage(JSONMessage);
       } else if (resultCode == SDL.SDLModel.data.resultCode.IN_USE) {
         FFW.Navigation.sendError(
           resultCode, id, 'Navigation.GetWayPoints',
@@ -613,7 +616,7 @@ FFW.Navigation = FFW.RPCObserver.create(
           'wayPoints': data
         }
       };
-      this.client.send(JSONMessage);
+      this.sendMesage(JSONMessage);
     },
     /**
      * Notifies if TBTClientState was activated
@@ -631,7 +634,7 @@ FFW.Navigation = FFW.RPCObserver.create(
           'state': state
         }
       };
-      this.client.send(JSONMessage);
+      this.sendMesage(JSONMessage);
     }
   }
 );

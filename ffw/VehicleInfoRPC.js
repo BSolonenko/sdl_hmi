@@ -48,17 +48,20 @@ FFW.VehicleInfo = FFW.RPCObserver.create(
     /**
      * access to basic RPC functionality
      */
-    client: FFW.RPCClient.create(
-      {
-        componentName: 'VehicleInfo'
-      }
-    ),
+    client: FFW.RPCClient,
     /**
      * connect to RPC bus
      */
     connect: function() {
-      this.client.connect(this, 100); // Magic number is unique identifier for
+      this.client.connect("VehicleInfo", this); // Magic number is unique identifier for
       // component
+    },
+    sendMesage: function(JSONMessage){
+      this.client.send(JSONMessage, "VehicleInfo");
+    },
+    componentName: "VehicleInfo",
+    subscribeToNotification: function(notification){
+      this.client.subscribeToNotification(notification, this.componentName);
     },
     /**
      * disconnect from RPC bus

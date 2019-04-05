@@ -34,15 +34,12 @@ FFW.Buttons = FFW.RPCObserver.create(
     /*
      * access to basic RPC functionality
      */
-    client: FFW.RPCClient.create(
-      {
-        componentName: 'Buttons'
-      }
-    ),
+    client: FFW.RPCClient,
     onButtonSubscriptionSubscribeRequestID: -1,
     onButtonSubscriptionUnsubscribeRequestID: -1,
     // const
     onButtonSubscriptionNotification: 'Buttons.OnButtonSubscription',
+    componentName:"Buttons",
     /**
      * Contains response codes for request that should be processed but there
      * were some kind of errors Error codes will be injected into response.
@@ -52,8 +49,14 @@ FFW.Buttons = FFW.RPCObserver.create(
      * connect to RPC bus
      */
     connect: function() {
-      this.client.connect(this, 200); // Magic number is unique identifier for
+      this.client.connect("Buttons", this); // Magic number is unique identifier for
       // component
+    },
+    sendMesage: function(JSONMessage){
+      this.client.send(JSONMessage, "Buttons");
+    },
+    subscribeToNotification: function(notification){
+      this.client.subscribeToNotification(notification, this.componentName);
     },
     /*
      * disconnect from RPC bus
@@ -71,7 +74,7 @@ FFW.Buttons = FFW.RPCObserver.create(
       this._super();
       // subscribe to notifications
       this.onButtonSubscriptionSubscribeRequestID
-        = this.client.subscribeToNotification(
+        = this.subscribeToNotification(
         this.onButtonSubscriptionNotification
       );
     },
@@ -258,7 +261,7 @@ FFW.Buttons = FFW.RPCObserver.create(
             'method': 'Buttons.GetCapabilities'
           }
         };
-        this.client.send(JSONMessage);
+        this.sendMesage(JSONMessage);
       }
     },
     /**
@@ -284,7 +287,7 @@ FFW.Buttons = FFW.RPCObserver.create(
             'method': method
           }
         };
-        this.client.send(JSONMessage);
+        this.sendMesage(JSONMessage);
       }
     },
     /**
@@ -313,7 +316,7 @@ FFW.Buttons = FFW.RPCObserver.create(
             }
           }
         };
-        this.client.send(JSONMessage);
+        this.sendMesage(JSONMessage);
       }
     },
     /*
@@ -331,7 +334,7 @@ FFW.Buttons = FFW.RPCObserver.create(
           'mode': type
         }
       };
-      this.client.send(JSONMessage);
+      this.sendMesage(JSONMessage);
     },
     /*
      * Notifies the ButtonsRPC that the web is all set. Should be called twice:
@@ -348,7 +351,7 @@ FFW.Buttons = FFW.RPCObserver.create(
           'mode': type
         }
       };
-      this.client.send(JSONMessage);
+      this.sendMesage(JSONMessage);
     },
     /*
      * Notifies the ButtonsRPC that the web is all set. Should be called twice:
@@ -367,7 +370,7 @@ FFW.Buttons = FFW.RPCObserver.create(
           'appID': appID
         }
       };
-      this.client.send(JSONMessage);
+      this.sendMesage(JSONMessage);
     },
     /*
      * Notifies the ButtonsRPC that the web is all set. Should be called twice:
@@ -386,7 +389,7 @@ FFW.Buttons = FFW.RPCObserver.create(
           'appID': appID
         }
       };
-      this.client.send(JSONMessage);
+      this.sendMesage(JSONMessage);
     }
   }
 );

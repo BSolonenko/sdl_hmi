@@ -47,17 +47,20 @@ FFW.VR = FFW.RPCObserver.create(
     /*
      * access to basic RPC functionality
      */
-    client: FFW.RPCClient.create(
-      {
-        componentName: 'VR'
-      }
-    ),
+    client: FFW.RPCClient,
     /*
      * connect to RPC bus
      */
     connect: function() {
-      this.client.connect(this, 500); // Magic number is unique identifier for
+      this.client.connect("VR", this); // Magic number is unique identifier for
       // component
+    },
+    sendMesage: function(JSONMessage){
+      this.client.send(JSONMessage, "VR");
+    },
+    componentName: "VR",
+    subscribeToNotification: function(notification){
+      this.client.subscribeToNotification(notification, this.componentName);
     },
     /*
      * disconnect from RPC bus
@@ -146,7 +149,7 @@ FFW.VR = FFW.RPCObserver.create(
                 'languages': SDL.SDLModel.data.sdlLanguagesList
               }
             };
-            this.client.send(JSONMessage);
+            this.sendMesage(JSONMessage);
             break;
           }
           case 'VR.GetLanguage':
@@ -163,7 +166,7 @@ FFW.VR = FFW.RPCObserver.create(
                 'language': SDL.SDLModel.data.hmiTTSVRLanguage
               }
             };
-            this.client.send(JSONMessage);
+            this.sendMesage(JSONMessage);
             break;
           }
           case 'VR.ChangeRegistration':
@@ -198,7 +201,7 @@ FFW.VR = FFW.RPCObserver.create(
                 'method': 'VR.IsReady'
               }
             };
-            this.client.send(JSONMessage);
+            this.sendMesage(JSONMessage);
             break;
           }
           case 'VR.PerformInteraction':
@@ -236,7 +239,7 @@ FFW.VR = FFW.RPCObserver.create(
                 'vrCapabilities': ['TEXT']
               }
             };
-            this.client.send(JSONMessage);
+            this.sendMesage(JSONMessage);
             break;
           }
           default:
@@ -273,7 +276,7 @@ FFW.VR = FFW.RPCObserver.create(
             }
           }
         };
-        this.client.send(JSONMessage);
+        this.sendMesage(JSONMessage);
       }
     },
     /**
@@ -305,7 +308,7 @@ FFW.VR = FFW.RPCObserver.create(
           if (commandID) {
             JSONMessage.error.data.choiceID = commandID;
           }
-          this.client.send(JSONMessage);
+          this.sendMesage(JSONMessage);
           this.errorResponsePull[requestID] = null;
           return;
         }
@@ -336,7 +339,7 @@ FFW.VR = FFW.RPCObserver.create(
         };
       }
       SDL.SDLModel.data.set('performInteractionSession', []);
-      this.client.send(JSONMessage);
+      this.sendMesage(JSONMessage);
     },
     /**
      * send response from onRPCRequest
@@ -370,7 +373,7 @@ FFW.VR = FFW.RPCObserver.create(
             'method': method
           }
         };
-        this.client.send(JSONMessage);
+        this.sendMesage(JSONMessage);
       }
     },
     /*
@@ -385,7 +388,7 @@ FFW.VR = FFW.RPCObserver.create(
           'choiceID': commandID
         }
       };
-      this.client.send(JSONMessage);
+      this.sendMesage(JSONMessage);
     },
     /**
      * Initiated by VR module to let SDL know that VR session has started.
@@ -396,7 +399,7 @@ FFW.VR = FFW.RPCObserver.create(
         'jsonrpc': '2.0',
         'method': 'VR.Started'
       };
-      this.client.send(JSONMessage);
+      this.sendMesage(JSONMessage);
     },
     /**
      * Initiated by VR module to let SDL know that VR session has stopped.
@@ -407,7 +410,7 @@ FFW.VR = FFW.RPCObserver.create(
         'jsonrpc': '2.0',
         'method': 'VR.Stopped'
       };
-      this.client.send(JSONMessage);
+      this.sendMesage(JSONMessage);
     },
     /**
      * send notification when command was triggered
@@ -425,7 +428,7 @@ FFW.VR = FFW.RPCObserver.create(
       if (appID) {
         JSONMessage.params.appID = appID;
       }
-      this.client.send(JSONMessage);
+      this.sendMesage(JSONMessage);
     },
     /**
      * Notifies if sdl VR components language was changed
@@ -440,7 +443,7 @@ FFW.VR = FFW.RPCObserver.create(
           'language': lang
         }
       };
-      this.client.send(JSONMessage);
+      this.sendMesage(JSONMessage);
     }
   }
 );

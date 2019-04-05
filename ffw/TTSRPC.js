@@ -57,17 +57,20 @@ FFW.TTS = FFW.RPCObserver.create(
     /*
      * access to basic RPC functionality
      */
-    client: FFW.RPCClient.create(
-      {
-        componentName: 'TTS'
-      }
-    ),
+    client: FFW.RPCClient,
     /*
      * connect to RPC bus
      */
     connect: function() {
-      this.client.connect(this, 300); // Magic number is unique identifier for
+      this.client.connect("TTS", this); // Magic number is unique identifier for
       // component
+    },
+    sendMesage: function(JSONMessage){
+      this.client.send(JSONMessage, "TTS");
+    },
+    componentName: "TTS",
+    subscribeToNotification: function(notification){
+      this.client.subscribeToNotification(notification, this.componentName);
     },
     /*
      * disconnect from RPC bus
@@ -229,7 +232,7 @@ FFW.TTS = FFW.RPCObserver.create(
               'method': 'TTS.GetCapabilities'
             }
           };
-          this.client.send(JSONMessage);
+          this.sendMesage(JSONMessage);
           break;
         }
         case 'TTS.GetSupportedLanguages':
@@ -245,7 +248,7 @@ FFW.TTS = FFW.RPCObserver.create(
               'languages': SDL.SDLModel.data.sdlLanguagesList
             }
           };
-          this.client.send(JSONMessage);
+          this.sendMesage(JSONMessage);
           break;
         }
         case 'TTS.GetLanguage':
@@ -261,7 +264,7 @@ FFW.TTS = FFW.RPCObserver.create(
               'language': SDL.SDLModel.data.hmiTTSVRLanguage
             }
           };
-          this.client.send(JSONMessage);
+          this.sendMesage(JSONMessage);
           break;
         }
         case 'TTS.ChangeRegistration':
@@ -305,7 +308,7 @@ FFW.TTS = FFW.RPCObserver.create(
               'method': 'TTS.IsReady'
             }
           };
-          this.client.send(JSONMessage);
+          this.sendMesage(JSONMessage);
           break;
         }
         default:
@@ -341,7 +344,7 @@ FFW.TTS = FFW.RPCObserver.create(
             }
           }
         };
-        this.client.send(JSONMessage);
+        this.sendMesage(JSONMessage);
       }
     },
     /**
@@ -376,7 +379,7 @@ FFW.TTS = FFW.RPCObserver.create(
             'method': method
           }
         };
-        this.client.send(JSONMessage);
+        this.sendMesage(JSONMessage);
       }
     },
     /*
@@ -392,7 +395,7 @@ FFW.TTS = FFW.RPCObserver.create(
           'language': lang
         }
       };
-      this.client.send(JSONMessage);
+      this.sendMesage(JSONMessage);
     },
     /**
      * Initiated by TTS module to let SDL know that TTS session has started.
@@ -403,7 +406,7 @@ FFW.TTS = FFW.RPCObserver.create(
         'jsonrpc': '2.0',
         'method': 'TTS.Started'
       };
-      this.client.send(JSONMessage);
+      this.sendMesage(JSONMessage);
     },
     /**
      * Sent OnResetTimeout notification to SDLCore to inform when
@@ -419,7 +422,7 @@ FFW.TTS = FFW.RPCObserver.create(
           'methodName': methodName
         }
       };
-      this.client.send(JSONMessage);
+      this.sendMesage(JSONMessage);
     },
     /**
      * Initiated by TTS module to let SDL know that TTS session has stopped.
@@ -430,7 +433,7 @@ FFW.TTS = FFW.RPCObserver.create(
         'jsonrpc': '2.0',
         'method': 'TTS.Stopped'
       };
-      this.client.send(JSONMessage);
+      this.sendMesage(JSONMessage);
     }
   }
 );

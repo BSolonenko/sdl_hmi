@@ -80,8 +80,11 @@ FFW.CAN = FFW.RPCObserver.create(
      * connect to RPC bus
      */
     connect: function() {
-      this.client.connect(this, 700); // Magic number is unique identifier for
+      this.client.connect("CAN", this); // Magic number is unique identifier for
       // component
+    },
+    sendMesage: function(JSONMessage){
+      this.client.send(JSONMessage, "CAN");
     },
     /**
      * disconnect from RPC bus
@@ -194,7 +197,7 @@ FFW.CAN = FFW.RPCObserver.create(
             }
           }
         };
-        this.client.send(JSONMessage);
+        this.sendMesage(JSONMessage);
       }
     },
     /**
@@ -219,7 +222,7 @@ FFW.CAN = FFW.RPCObserver.create(
             'method': method
           }
         };
-        this.client.send(JSONMessage);
+        this.sendMesage(JSONMessage);
       }
     },
     /**
@@ -233,7 +236,7 @@ FFW.CAN = FFW.RPCObserver.create(
         'jsonrpc': '2.0',
         'method': 'CAN.TuneUp'
       };
-      this.client.send(JSONMessage);
+      this.sendMesage(JSONMessage);
     },
     /**
      * Send notification to CAN to tune radio
@@ -246,7 +249,7 @@ FFW.CAN = FFW.RPCObserver.create(
         'jsonrpc': '2.0',
         'method': 'CAN.TuneDown'
       };
-      this.client.send(JSONMessage);
+      this.sendMesage(JSONMessage);
     },
     /**
      * Send notification to CAN to Start Scan logic
@@ -259,7 +262,7 @@ FFW.CAN = FFW.RPCObserver.create(
         'jsonrpc': '2.0',
         'method': 'CAN.StartScan'
       };
-      this.client.send(JSONMessage);
+      this.sendMesage(JSONMessage);
     },
     /**
      * Send notification to CAN to Start Scan logic
@@ -272,7 +275,7 @@ FFW.CAN = FFW.RPCObserver.create(
         'jsonrpc': '2.0',
         'method': 'CAN.StopScan'
       };
-      this.client.send(JSONMessage);
+      this.sendMesage(JSONMessage);
     },
     /**
      * Notification about changed on HMI screen radio presets send to SDL
@@ -289,7 +292,7 @@ FFW.CAN = FFW.RPCObserver.create(
           'customPresets': presets
         }
       };
-      this.client.send(JSONMessage);
+      this.sendMesage(JSONMessage);
     },
     /**
      * Send response for request GetRadioDetails
@@ -311,7 +314,7 @@ FFW.CAN = FFW.RPCObserver.create(
       for (var key in SDL.RadioModel.radioDetails) {
         JSONMessage.result[key] = SDL.RadioModel.radioDetails[key];
       }
-      this.client.send(JSONMessage);
+      this.sendMesage(JSONMessage);
     },
     /**
      * Notification When any of current radio tuner details are changed
@@ -329,7 +332,7 @@ FFW.CAN = FFW.RPCObserver.create(
       for (var key in data) {
         JSONMessage.params[key] = data[key];
       }
-      this.client.send(JSONMessage);
+      this.sendMesage(JSONMessage);
     },
     /**
      * Notification when have action in player
@@ -347,7 +350,7 @@ FFW.CAN = FFW.RPCObserver.create(
       for (var key in data) {
         JSONMessage.params[key] = data[key];
       }
-      this.client.send(JSONMessage);
+      this.sendMesage(JSONMessage);
     },
     /**
      * Notification about changed on HMI screen radio presets send to SDL
@@ -364,7 +367,7 @@ FFW.CAN = FFW.RPCObserver.create(
           'customPresets': presets
         }
       };
-      this.client.send(JSONMessage);
+      this.sendMesage(JSONMessage);
     },
     sendPlayerDetails: function() {
       var player = SDL.MediaController.get('currentSelectedPlayer');
