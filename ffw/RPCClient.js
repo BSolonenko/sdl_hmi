@@ -111,11 +111,6 @@ FFW.RPCClient = Em.Object.create(
       }
     },
 
-    onRPCRegistered: function(){
-      if(this.socket.readyState != this.socket.OPEN){
-        return;
-      }
-    },
     /*
      * when result is received from RPC component this function is called It
      * is the propriate place to check results of reuqest execution Please
@@ -125,20 +120,21 @@ FFW.RPCClient = Em.Object.create(
     onWSMessage: function(evt) {
       Em.Logger.log("SDL -> HMI "+this.getTime() +  ": " + evt.data);
       var jsonObj = JSON.parse(evt.data, SDL.RPCController.capabilitiesCheck);
-      //Verification of unsupported params and remove them from original
-      // request Changing filenames with backslash - escape the \ with %5C
-      // due to Issue 45051 in chromium
-      // this.observer.checkImage(jsonObj.params);
-      // Verification of unsupported params and remove them from original
-      // request
+
       var observerName = "";
       if(jsonObj.method){
        observerName = jsonObj.method.substring(0,jsonObj.method.indexOf('.'));
        if(observerName === "SDL"){
         observerName = "BasicCommunication";
        }
+        //Verification of unsupported params and remove them from original
+        // request Changing filenames with backslash - escape the \ with %5C
+        // due to Issue 45051 in chromium
+       this.observerMap[observerName].checkImage(jsonObj.params);
       }
 
+      // Verification of unsupported params and remove them from original
+      // request
       if (SDL.RPCController.capabilityCheckResult != null ) {
         this.observerMap[observerName].errorResponsePull[jsonObj.id]
           = SDL.RPCController.capabilityCheckResult;
@@ -177,9 +173,9 @@ FFW.RPCClient = Em.Object.create(
      */
     onWSClose: function(evt) {
       Em.Logger.log('RPCClient: Connection is closed');
-      for(var i in observerMap){
+      for(var i in this.observerMap){
               SDL.SDLController.unregisterComponentStatus(i);
-              observerMap[i].onRPCDisconnected();
+              this.observerMap[i].onRPCDisconnected();
       }
 
       var self = this;
@@ -248,8 +244,6 @@ FFW.RPCClient = Em.Object.create(
       this.command[msgId] = function(jsonObj){
         if (jsonObj.result != null) {
           self.observerMap[componentName].onRPCResult(jsonObj);
-          Em.Logger.log("Subscribed to " + notification);
-
         } else if (jsonObj.error ) {
           self.observerMap[componentName].onRPCError(jsonObj);
         }
@@ -274,7 +268,6 @@ FFW.RPCClient = Em.Object.create(
       this.command[msgId] = function(jsonObj){
         if (jsonObj.result != null) {
           self.observerMap[componentName].onRPCResult(jsonObj);
-          Em.Logger.log("Unsubscribed to " + notification);
         } else if (jsonObj.error) {
           self.observerMap[componentName].onRPCError(jsonObj);
         }

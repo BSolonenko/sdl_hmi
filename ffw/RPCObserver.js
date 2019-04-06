@@ -33,7 +33,6 @@ FFW.RPCObserver = Em.Object.extend(
 
       // request necessary parameters from Backend
       SDL.SDLController.registeredComponentStatus(this.componentName);
-      Em.Logger.log(this.componentName + " registered");
     },
     onRPCUnregistered: function() {
       Em.Logger.log('FFW.RPCObserver.onUnregistered');
