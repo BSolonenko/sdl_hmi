@@ -137,12 +137,15 @@ SDL.SDLVehicleInfoModel = Em.Object.create(
       'tpms': 'VEHICLEDATA_TPMS',
       'cloudAppVehicleID': 'VEHICLEDATA_CLOUDAPPVEHICLEID'
     },
+    oem_custom_type: "EOM_SPECIFIC",
+
     /**
      * Stored VehicleInfo Data
      *
      * @type {Object}
      */
-    vehicleData: {
+    vehicleData: null,
+    defaultVehicleData: {
       'gps': {
         'longitudeDegrees': 42.5E0,
         'latitudeDegrees': -83.3E0,
@@ -307,21 +310,25 @@ SDL.SDLVehicleInfoModel = Em.Object.create(
       },
       'tpms': 'TIRES_NOT_TRAINED',
       'cloudAppVehicleID': 'SDLVehicleNo123'
-      //
-      // 'avgFuelEconomy': 0.1,
-      // 'batteryVoltage': 12.5,
-      // 'batteryPackVoltage': 12.5,
-      // 'batteryPackCurrent': 7.0,
-      // 'batteryPackTemperature': 30,
-      // 'tripOdometer': 0,
-      // 'genericbinary': '165165650',
-      // 'satRadioESN': '165165650',
-      // 'rainSensor': 165165650,
-      // 'displayResolution': {
-      //   'width': 800,
-      //   'height': 480
-      // }
     },
+
+    init: function() {
+      this.vehicleData = this.defaultVehicleData;
+    },
+
+    updateFromPt: function(path){
+      this.vehicleData = this.defaultVehicleData;
+      var self = this;
+      VehicleInfoHelper.updatePT(path, function(pt){
+        var new_data = VehicleInfoHelper.getDefaultDataFromPTJson(pt);
+        for(var i in new_data){
+          if(new_data.hasOwnProperty(i) && self.vehicleData[i] == undefined){
+            self.vehicleData[i] = new_data[i];
+          }
+        }
+      });
+    },
+
     /**
      * Method to set selected state of vehicle transmission to vehicleData
      */
@@ -405,20 +412,24 @@ SDL.SDLVehicleInfoModel = Em.Object.create(
         if (key === 'clusterModeStatus') {
           key = 'clusterModes';
         }
+        var type = this.oem_custom_type;
+        if(this.eVehicleDataType.hasOwnProperty(key)){
+          type = this.eVehicleDataType[key];
+        }
         if (SDL.SDLModel.subscribedData[key] === true) {
           subscribeVIData[key] = {
-            dataType: this.eVehicleDataType[key],
+            dataType: type,
             resultCode: 'DATA_ALREADY_SUBSCRIBED'
           };
         } else if (key === 'externalTemperature') {
           subscribeVIData[key] = {
-            dataType: this.eVehicleDataType[key],
+            dataType: type,
             resultCode: 'VEHICLE_DATA_NOT_AVAILABLE'
           };
         } else {
           SDL.SDLModel.subscribedData[key] = true;
           subscribeVIData[key] = {
-            dataType: this.eVehicleDataType[key],
+            dataType: type,
             resultCode: 'SUCCESS'
           };
         }
@@ -439,20 +450,24 @@ SDL.SDLVehicleInfoModel = Em.Object.create(
         if (key === 'clusterModeStatus') {
           key = 'clusterModes';
         }
+        var type = this.oem_custom_type;
+        if(this.eVehicleDataType.hasOwnProperty(key)){
+          type = this.eVehicleDataType[key];
+        }
         if (SDL.SDLModel.subscribedData[key] === false) {
           subscribeVIData[key] = {
-            dataType: this.eVehicleDataType[key],
+            dataType: type,
             resultCode: 'DATA_NOT_SUBSCRIBED'
           };
         } else if (key === 'externalTemperature') {
           subscribeVIData[key] = {
-            dataType: this.eVehicleDataType[key],
+            dataType: type,
             resultCode: 'VEHICLE_DATA_NOT_AVAILABLE'
           };
         } else {
           SDL.SDLModel.subscribedData[key] = false;
           subscribeVIData[key] = {
-            dataType: this.eVehicleDataType[key],
+            dataType: type,
             resultCode: 'SUCCESS'
           };
         }

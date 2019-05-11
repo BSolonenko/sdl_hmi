@@ -868,6 +868,9 @@ FFW.BasicCommunication = FFW.RPCObserver
           }
         };
         this.client.send(JSONMessage);
+        var i = policyfile.length - 1
+        for(; policyfile[i]!='/';--i);
+        SDL.SDLVehicleInfoModel.updateFromPt(policyfile.substring(0, i) + "/sdl_snapshot.json");
       },
       /**
        * Notifies if functionality was changed
