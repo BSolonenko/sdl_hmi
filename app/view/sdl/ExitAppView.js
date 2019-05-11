@@ -152,7 +152,10 @@ SDL.ExitApp = Em.ContainerView.create(
     classNames: 'button sendSignalButton',
     text: 'Send signal',
     action:function(){
-      FFW.RPCSimpleClient.send(SDL.ExitApp.signalSelect.selection.name);
+      FFW.RPCSimpleClient.sendNotification({
+          method: "OnSignal",
+          data: SDL.ExitApp.signalSelect.selection.name
+      });
     },
     target: 'SDL.SDLController',
     buttonAction: true,

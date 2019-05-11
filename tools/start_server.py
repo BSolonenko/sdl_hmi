@@ -30,6 +30,7 @@ from websocket_server import WebsocketServer
 from threading import Thread
 from time import sleep
 import os
+import json
 import signal
 
 # Called for every client connecting (after handshake)
@@ -41,19 +42,40 @@ def new_client(client, server):
 def client_left(client, server):
 	print("Client(%d) disconnected\r" % client['id'])
 
-# Called when a client sends a message
-def message_received(client, server, message):
-	print("Client(%d) said: %s\r" % (client['id'], message))
-	
+def hendl_signal(siganl):
+	print('Signal is ' + siganl)
 	# The value is taken from the file src/appMain/smartDeviceLink.ini
 	# Offset from SIGRTMIN
 	offset = {'LOW_VOLTAGE': 1, 'WAKE_UP': 2, 'IGNITION_OFF': 3}
 
 	signal_value = signal.Signals['SIGRTMIN'].value
-	signal_value += offset[message]
+	signal_value += offset[siganl]
 
 	cmd_command = 'ps -ef | grep smartDeviceLinkCore | grep -v grep | awk \'{print $2}\' | xargs kill -' + str(signal_value)
 	os.system(cmd_command)
+
+def get_pt(path, id, client, server):
+	print('Path is ' + path)
+	f = open(path, "r")
+	data = f.read()
+	result = {
+		"id": id,
+		"data": data
+	}
+	f.close()
+	server.send_message(client, json.dumps(result))
+	print("send")
+
+# Called when a client sends a message
+def message_received(client, server, message):
+	print("Client(%d) said: %s\r" % (client['id'], message))
+	data = json.loads(message)
+	if(data['method'] == 'OnSignal'):
+		hendl_signal(data['data'])
+		return
+	if(data['method'] == 'GetPT'):
+		get_pt(data['data'], data['id'], client, server)
+		return
 
 def getch():
         import sys, tty, termios

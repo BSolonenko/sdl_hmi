@@ -25,8 +25,11 @@
  */
 FFW.RPCSimpleClient = Em.Object.create({
 
-    socket:null,
+    messageID: 0,
+    socket: null,
     sendData: [],
+    observerMap: {},
+
     init:function(){
     },
     connect:function(){
@@ -50,6 +53,17 @@ FFW.RPCSimpleClient = Em.Object.create({
         }, 100
       );
     },
+
+    sendRequest:function(data, observer){
+      data.id = this.nextID();
+      this.observerMap[data.id] = observer;
+      this.send(JSON.stringify(data));
+    },
+
+    sendNotification:function(data){
+      this.send(JSON.stringify(data));
+    },
+
     send:function(data){
       this.sendData.push(data);
 
@@ -68,12 +82,26 @@ FFW.RPCSimpleClient = Em.Object.create({
       }
       if (this.sendData.length > 0) {
         this.triggerMessageSend();
-      } else {
+      } else if (Object.keys(this.observerMap).length == 0) {
         this.socket.close();
       }
     },
     onWSMessage: function(evt) {
       Em.Logger.log('Message received: ' + evt.data);
+      var message = JSON.parse(evt.data);
+      if(message.id == undefined){
+        return;
+      }
+      if(this.observerMap[message.id] == undefined){
+        return;
+      }
+
+      this.observerMap[message.id].onMessage(message.data);
+      delete this.observerMap[message.id];
+
+      if (Object.keys(this.observerMap).length == 0) {
+        this.socket.close();
+      }
     },
     onWSOpen: function(evt) {
       Em.Logger.log('RPCSimpleCLient.onWSOpen');
@@ -84,6 +112,10 @@ FFW.RPCSimpleClient = Em.Object.create({
     onWSClose: function(evt) {
       Em.Logger.log('RPCSimpleClient: Connection is closed');
       this.set('socket', null);
+    },
+
+    nextID: function(){
+      return ++this.messageID;
     }
   }
 );
